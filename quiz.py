@@ -26,7 +26,8 @@ class Quiz:
         self.questions = []
         self.teams = [Team(self, 'Red'), Team(self, 'Blue')]
         self._load_questions()
-        self.current_question = self.questions[0]
+        self.current_question_index = 0
+        self.current_question = self.questions[self.current_question_index]
 
         self.play_button = Button(self, 'Start Quiz')
         self.scoreboards = [TeamScoreboard(self, self.teams[0]), TeamScoreboard(self, self.teams[1])]
@@ -52,6 +53,8 @@ class Quiz:
         # Redraw the screen.
         self.screen.fill(self.settings.bg_color)
 
+        self._draw_header()
+
         for sb in self.scoreboards:
             sb.show_score()
 
@@ -60,6 +63,8 @@ class Quiz:
             self.play_button.draw_button()
         else:
             self.current_question.display_question()
+            self._draw_next_button()
+            self._show_answer()
 
         if self.text_input_mode:
             self._draw_user_text()
@@ -108,6 +113,12 @@ class Quiz:
                 if self.buzz_player:
                     self.text_input_mode = True
                     self.submit_answer_mode = True
+            if self.next_image_rect.collidepoint(mouse_pos):
+                self.current_question_index += 1
+                self.current_question = self.questions[self.current_question_index]
+                self.display_answer = False
+            if self.show_answer_rect.collidepoint(mouse_pos):
+                self.display_answer = not self.display_answer
 
     def _check_keydown_events(self, event):
         """Responds to keydown events."""
@@ -136,7 +147,6 @@ class Quiz:
                     self.display_answer = True
                 else:
                     self.buzz_player.score_points(self.settings.incorrect_score)
-                    self.display_answer = True
         elif event.key == pygame.K_BACKSPACE:
             self.user_text = self.user_text[:-1]
         else:
@@ -162,6 +172,42 @@ class Quiz:
 
         self.screen.blit(self.user_text_image, self.text_input_rect)
         self.screen.blit(self.user_text_label_image, self.text_input_label_rect)
+
+    def _draw_header(self):
+        font = pygame.font.SysFont('Courgette', 36)
+        # Label box
+        self.title_image = font.render('Blackfriars Trivia', True, (0, 0, 0), self.settings.bg_color)
+        self.title_image_rect = self.title_image.get_rect()
+        self.title_image_rect.centerx = self.screen_rect.centerx
+        self.title_image_rect.top = self.screen_rect.top + 20
+
+        self.screen.blit(self.title_image, self.title_image_rect)
+        arms = pygame.image.load('Blackfriars_Arms.png')
+        arms = pygame.transform.scale(arms, (50, 60))
+        arms_rect = arms.get_rect()
+        arms_rect.centerx = self.title_image_rect.centerx
+        arms_rect.top = self.title_image_rect.bottom
+        self.screen.blit(arms, arms_rect)
+
+    def _draw_next_button(self):
+        font = pygame.font.SysFont(None, 36)
+        # Label box
+        self.next_image = font.render('Next', True, (0, 0, 0), (110, 210, 230))
+        self.next_image_rect = self.next_image.get_rect()
+        self.next_image_rect.left = self.screen_rect.left + 20
+        self.next_image_rect.bottom = self.screen_rect.bottom - 20
+
+        self.screen.blit(self.next_image, self.next_image_rect)
+
+    def _show_answer(self):
+        font = pygame.font.SysFont(None, 36)
+        # Label box
+        self.show_answer_image = font.render('Show answer', True, (0, 0, 0), (110, 210, 230))
+        self.show_answer_rect = self.show_answer_image.get_rect()
+        self.show_answer_rect.right = self.screen_rect.right - 20
+        self.show_answer_rect.bottom = self.screen_rect.bottom - 20
+
+        self.screen.blit(self.show_answer_image, self.show_answer_rect)
 
     def run_quiz(self):
         while True:

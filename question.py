@@ -17,7 +17,9 @@ class Question:
         drawText(self.quiz.screen, self.prompt, (0, 0, 0), self.display_rect, font, bkg=self.quiz.settings.bg_color)
 
     def check_answer(self, response):
-        return response.lower().strip() == self.answer.lower().strip()
+        clean_response = response.lower().strip()
+        clean_answer = self.answer.lower().strip()
+        return clean_response in clean_answer
 
     def display_answer(self):
         self.answer_rect = pygame.Rect(0, 0, 550, 300)
