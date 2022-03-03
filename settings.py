@@ -4,7 +4,7 @@ class Settings:
     def __init__(self):
         """Initialize the game's static settings."""
         self.correct_score = 10
-        self.incorrect_score = -5
+        self.incorrect_score = 0
 
         self.screen_width = 1200
         self.screen_height = 600

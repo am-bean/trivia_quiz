@@ -19,7 +19,7 @@ class Quiz:
         self.settings = Settings()
         pygame.init()
         pygame.display.set_caption("Trivia Quiz")
-        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height), pygame.FULLSCREEN)
         self.screen_rect = self.screen.get_rect()
 
         self.players = []
